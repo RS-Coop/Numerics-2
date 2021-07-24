@@ -1,0 +1,996 @@
+\documentclass[11pt]{article}
+
+    \usepackage[breakable]{tcolorbox}
+    \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
+    
+    \usepackage{iftex}
+    \ifPDFTeX
+    	\usepackage[T1]{fontenc}
+    	\usepackage{mathpazo}
+    \else
+    	\usepackage{fontspec}
+    \fi
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % Maintain compatibility with old templates. Remove in nbconvert 6.0
+    \let\Oldincludegraphics\includegraphics
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionFormat{nocaption}{}
+    \captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
+
+    \usepackage{float}
+    \floatplacement{figure}{H} % forces figures to be placed at the correct location
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+    \usepackage[mathletters]{ucs} % Extended unicode (utf-8) support
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics 
+                         % to support a larger range
+    \makeatletter % fix for old versions of grffile with XeLaTeX
+    \@ifpackagelater{grffile}{2019/11/01}
+    {
+      % Do nothing on new versions
+    }
+    {
+      \def\Gread@@xetex#1{%
+        \IfFileExists{"\Gin@base".bb}%
+        {\Gread@eps{\Gin@base.bb}}%
+        {\Gread@@xetex@aux#1}%
+      }
+    }
+    \makeatother
+    \usepackage[Export]{adjustbox} % Used to constrain images to a maximum size
+    \adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
+
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    % The default LaTeX title has an obnoxious amount of whitespace. By default,
+    % titling removes some of it. It also provides customization options.
+    \usepackage{titling}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    \usepackage{mathrsfs}
+    
+
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+    \definecolor{ansi-default-inverse-fg}{HTML}{FFFFFF}
+    \definecolor{ansi-default-inverse-bg}{HTML}{000000}
+
+    % common color for the border for error outputs.
+    \definecolor{outerrorbackground}{HTML}{FFDFDF}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+    
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    
+    
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatibility definitions
+    \def\gt{>}
+    \def\lt{<}
+    \let\Oldtex\TeX
+    \let\Oldlatex\LaTeX
+    \renewcommand{\TeX}{\textrm{\Oldtex}}
+    \renewcommand{\LaTeX}{\textrm{\Oldlatex}}
+    % Document parameters
+    % Document title
+    \title{HW09}
+    
+    
+    
+    
+    
+% Pygments definitions
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\@namedef{PY@tok@w}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\@namedef{PY@tok@c}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\@namedef{PY@tok@cp}{\def\PY@tc##1{\textcolor[rgb]{0.74,0.48,0.00}{##1}}}
+\@namedef{PY@tok@k}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kt}{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\@namedef{PY@tok@o}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ow}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@nb}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nf}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@ne}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.82,0.25,0.23}{##1}}}
+\@namedef{PY@tok@nv}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@no}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\@namedef{PY@tok@nl}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.63,0.00}{##1}}}
+\@namedef{PY@tok@ni}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.60,0.60,0.60}{##1}}}
+\@namedef{PY@tok@na}{\def\PY@tc##1{\textcolor[rgb]{0.49,0.56,0.16}{##1}}}
+\@namedef{PY@tok@nt}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nd}{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@s}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sd}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@si}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\@namedef{PY@tok@se}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.13}{##1}}}
+\@namedef{PY@tok@sr}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\@namedef{PY@tok@ss}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sx}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@m}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@gh}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gu}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gd}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\@namedef{PY@tok@gi}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.63,0.00}{##1}}}
+\@namedef{PY@tok@gr}{\def\PY@tc##1{\textcolor[rgb]{1.00,0.00,0.00}{##1}}}
+\@namedef{PY@tok@ge}{\let\PY@it=\textit}
+\@namedef{PY@tok@gs}{\let\PY@bf=\textbf}
+\@namedef{PY@tok@gp}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@go}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.53,0.53}{##1}}}
+\@namedef{PY@tok@gt}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\@namedef{PY@tok@err}{\def\PY@bc##1{{\setlength{\fboxsep}{\string -\fboxrule}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}}
+\@namedef{PY@tok@kc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kd}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kr}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@bp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@fm}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@vc}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vg}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vi}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vm}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sa}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sb}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sc}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@dl}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s2}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sh}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s1}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@mb}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mf}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mh}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mi}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@il}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mo}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ch}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\@namedef{PY@tok@cm}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\@namedef{PY@tok@cpf}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\@namedef{PY@tok@c1}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\@namedef{PY@tok@cs}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % For linebreaks inside Verbatim environment from package fancyvrb. 
+    \makeatletter
+        \newbox\Wrappedcontinuationbox 
+        \newbox\Wrappedvisiblespacebox 
+        \newcommand*\Wrappedvisiblespace {\textcolor{red}{\textvisiblespace}} 
+        \newcommand*\Wrappedcontinuationsymbol {\textcolor{red}{\llap{\tiny$\m@th\hookrightarrow$}}} 
+        \newcommand*\Wrappedcontinuationindent {3ex } 
+        \newcommand*\Wrappedafterbreak {\kern\Wrappedcontinuationindent\copy\Wrappedcontinuationbox} 
+        % Take advantage of the already applied Pygments mark-up to insert 
+        % potential linebreaks for TeX processing. 
+        %        {, <, #, %, $, ' and ": go to next line. 
+        %        _, }, ^, &, >, - and ~: stay at end of broken line. 
+        % Use of \textquotesingle for straight quote. 
+        \newcommand*\Wrappedbreaksatspecials {% 
+            \def\PYGZus{\discretionary{\char`\_}{\Wrappedafterbreak}{\char`\_}}% 
+            \def\PYGZob{\discretionary{}{\Wrappedafterbreak\char`\{}{\char`\{}}% 
+            \def\PYGZcb{\discretionary{\char`\}}{\Wrappedafterbreak}{\char`\}}}% 
+            \def\PYGZca{\discretionary{\char`\^}{\Wrappedafterbreak}{\char`\^}}% 
+            \def\PYGZam{\discretionary{\char`\&}{\Wrappedafterbreak}{\char`\&}}% 
+            \def\PYGZlt{\discretionary{}{\Wrappedafterbreak\char`\<}{\char`\<}}% 
+            \def\PYGZgt{\discretionary{\char`\>}{\Wrappedafterbreak}{\char`\>}}% 
+            \def\PYGZsh{\discretionary{}{\Wrappedafterbreak\char`\#}{\char`\#}}% 
+            \def\PYGZpc{\discretionary{}{\Wrappedafterbreak\char`\%}{\char`\%}}% 
+            \def\PYGZdl{\discretionary{}{\Wrappedafterbreak\char`\$}{\char`\$}}% 
+            \def\PYGZhy{\discretionary{\char`\-}{\Wrappedafterbreak}{\char`\-}}% 
+            \def\PYGZsq{\discretionary{}{\Wrappedafterbreak\textquotesingle}{\textquotesingle}}% 
+            \def\PYGZdq{\discretionary{}{\Wrappedafterbreak\char`\"}{\char`\"}}% 
+            \def\PYGZti{\discretionary{\char`\~}{\Wrappedafterbreak}{\char`\~}}% 
+        } 
+        % Some characters . , ; ? ! / are not pygmentized. 
+        % This macro makes them "active" and they will insert potential linebreaks 
+        \newcommand*\Wrappedbreaksatpunct {% 
+            \lccode`\~`\.\lowercase{\def~}{\discretionary{\hbox{\char`\.}}{\Wrappedafterbreak}{\hbox{\char`\.}}}% 
+            \lccode`\~`\,\lowercase{\def~}{\discretionary{\hbox{\char`\,}}{\Wrappedafterbreak}{\hbox{\char`\,}}}% 
+            \lccode`\~`\;\lowercase{\def~}{\discretionary{\hbox{\char`\;}}{\Wrappedafterbreak}{\hbox{\char`\;}}}% 
+            \lccode`\~`\:\lowercase{\def~}{\discretionary{\hbox{\char`\:}}{\Wrappedafterbreak}{\hbox{\char`\:}}}% 
+            \lccode`\~`\?\lowercase{\def~}{\discretionary{\hbox{\char`\?}}{\Wrappedafterbreak}{\hbox{\char`\?}}}% 
+            \lccode`\~`\!\lowercase{\def~}{\discretionary{\hbox{\char`\!}}{\Wrappedafterbreak}{\hbox{\char`\!}}}% 
+            \lccode`\~`\/\lowercase{\def~}{\discretionary{\hbox{\char`\/}}{\Wrappedafterbreak}{\hbox{\char`\/}}}% 
+            \catcode`\.\active
+            \catcode`\,\active 
+            \catcode`\;\active
+            \catcode`\:\active
+            \catcode`\?\active
+            \catcode`\!\active
+            \catcode`\/\active 
+            \lccode`\~`\~ 	
+        }
+    \makeatother
+
+    \let\OriginalVerbatim=\Verbatim
+    \makeatletter
+    \renewcommand{\Verbatim}[1][1]{%
+        %\parskip\z@skip
+        \sbox\Wrappedcontinuationbox {\Wrappedcontinuationsymbol}%
+        \sbox\Wrappedvisiblespacebox {\FV@SetupFont\Wrappedvisiblespace}%
+        \def\FancyVerbFormatLine ##1{\hsize\linewidth
+            \vtop{\raggedright\hyphenpenalty\z@\exhyphenpenalty\z@
+                \doublehyphendemerits\z@\finalhyphendemerits\z@
+                \strut ##1\strut}%
+        }%
+        % If the linebreak is at a space, the latter will be displayed as visible
+        % space at end of first line, and a continuation symbol starts next line.
+        % Stretch/shrink are however usually zero for typewriter font.
+        \def\FV@Space {%
+            \nobreak\hskip\z@ plus\fontdimen3\font minus\fontdimen4\font
+            \discretionary{\copy\Wrappedvisiblespacebox}{\Wrappedafterbreak}
+            {\kern\fontdimen2\font}%
+        }%
+        
+        % Allow breaks at special characters using \PYG... macros.
+        \Wrappedbreaksatspecials
+        % Breaks at punctuation characters . , ; ? ! and / need catcode=\active 	
+        \OriginalVerbatim[#1,codes*=\Wrappedbreaksatpunct]%
+    }
+    \makeatother
+
+    % Exact colors from NB
+    \definecolor{incolor}{HTML}{303F9F}
+    \definecolor{outcolor}{HTML}{D84315}
+    \definecolor{cellborder}{HTML}{CFCFCF}
+    \definecolor{cellbackground}{HTML}{F7F7F7}
+    
+    % prompt
+    \makeatletter
+    \newcommand{\boxspacing}{\kern\kvtcb@left@rule\kern\kvtcb@boxsep}
+    \makeatother
+    \newcommand{\prompt}[4]{
+        {\ttfamily\llap{{\color{#2}[#3]:\hspace{3pt}#4}}\vspace{-\baselineskip}}
+    }
+    
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy 
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=0.5in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+\begin{document}
+    
+    \maketitle
+    
+    
+
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{1}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+\PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
+\PY{k+kn}{import} \PY{n+nn}{seaborn} \PY{k}{as} \PY{n+nn}{sns}
+\PY{n}{sns}\PY{o}{.}\PY{n}{set}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{problem-1}{%
+\section{Problem 1}\label{problem-1}}
+
+    We will implement the Crank-Nicolson scheme for solving the Heat
+Equation which is given as follows:
+
+\begin{align}
+    &\phi_t=\partial_x[a(x)\cdot\phi_x]+f(x,t)\\
+    &\text{IC:}\quad\phi(x,0)=\phi_0(x)\\
+    &\text{BC:}\quad\phi(0,t)=0\\
+    &\text{BC:}\quad\phi(1,t)=0
+\end{align}
+    In the code below we define this scheme where we assume the homogeneous
+Dirichlet boundary conditions, but provide flexibility for the initial
+conditions, variable conductivity, and power sources.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{2}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{l+s+sd}{\PYZsq{}\PYZsq{}\PYZsq{}}
+\PY{l+s+sd}{1 dimensional Heat Equation solver using the Crank\PYZhy{}Nicolson scheme.}
+\PY{l+s+sd}{Assumes homogenous Dirichlet boundary conditions.}
+
+\PY{l+s+sd}{f \PYZhy{}\PYZgt{} f(x,t), power input to the system (i.e. RHS)}
+\PY{l+s+sd}{a \PYZhy{}\PYZgt{} a(x), conductivity}
+\PY{l+s+sd}{ic \PYZhy{}\PYZgt{} phi(x), initial condition for spatial dimension}
+\PY{l+s+sd}{d \PYZhy{}\PYZgt{} ((x0, xN), (t0, tN)) Tuple of spatial domain and temporal domain}
+\PY{l+s+sd}{hx \PYZhy{}\PYZgt{} Spatial step size (optional)}
+\PY{l+s+sd}{ht \PYZhy{}\PYZgt{} Temporal step size (optional)}
+\PY{l+s+sd}{\PYZsq{}\PYZsq{}\PYZsq{}}
+\PY{k}{def} \PY{n+nf}{heatEq}\PY{p}{(}\PY{n}{f}\PY{p}{,} \PY{n}{a}\PY{p}{,} \PY{n}{ic}\PY{p}{,} \PY{n}{d}\PY{p}{,} \PY{n}{hx}\PY{o}{=}\PY{l+m+mf}{0.1}\PY{p}{,} \PY{n}{ht}\PY{o}{=}\PY{l+m+mf}{0.1}\PY{p}{)}\PY{p}{:}
+    \PY{c+c1}{\PYZsh{}Unpack some stuff}
+    \PY{n}{Dx} \PY{o}{=} \PY{n}{d}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}
+    \PY{n}{Dt} \PY{o}{=} \PY{n}{d}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}
+    
+    \PY{c+c1}{\PYZsh{}Set up grid}
+    \PY{n}{Nx} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n}{Dx}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{n}{Dx}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{+}\PY{n}{hx}\PY{p}{,} \PY{n}{hx}\PY{p}{)}
+    \PY{n}{Nt} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n}{Dt}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{n}{Dt}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{+}\PY{n}{ht}\PY{p}{,} \PY{n}{ht}\PY{p}{)}
+    
+    \PY{n}{U} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{Nx}\PY{p}{)}\PY{p}{,} \PY{n+nb}{len}\PY{p}{(}\PY{n}{Nt}\PY{p}{)}\PY{p}{)}\PY{p}{)} \PY{c+c1}{\PYZsh{}Space x Time}
+        
+    \PY{c+c1}{\PYZsh{}Set IC}
+    \PY{n}{U}\PY{p}{[}\PY{p}{:}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{n}{ic}\PY{p}{(}\PY{n}{Nx}\PY{p}{)}
+    
+    \PY{c+c1}{\PYZsh{}Check consistency}
+    \PY{k}{assert} \PY{n}{U}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}\PY{o}{==}\PY{l+m+mi}{0} \PY{o+ow}{and} \PY{n}{U}\PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}\PY{o}{==}\PY{l+m+mi}{0}
+    
+    \PY{c+c1}{\PYZsh{}Combine some terms}
+    \PY{n}{h} \PY{o}{=} \PY{p}{(}\PY{l+m+mi}{1}\PY{o}{/}\PY{l+m+mi}{2}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{n}{ht}\PY{o}{/}\PY{n}{hx}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{)}
+    
+    \PY{c+c1}{\PYZsh{}Build A, B, C, D}
+    \PY{n}{A} \PY{o}{=} \PY{n}{h}\PY{o}{*}\PY{n}{a}\PY{p}{(}\PY{n}{Nx}\PY{o}{\PYZhy{}}\PY{n}{hx}\PY{o}{/}\PY{l+m+mi}{2}\PY{p}{)}
+    \PY{n}{B} \PY{o}{=} \PY{l+m+mi}{1} \PY{o}{+} \PY{n}{h}\PY{o}{*}\PY{p}{(}\PY{n}{a}\PY{p}{(}\PY{n}{Nx}\PY{o}{\PYZhy{}}\PY{n}{hx}\PY{o}{/}\PY{l+m+mi}{2}\PY{p}{)} \PY{o}{+} \PY{n}{a}\PY{p}{(}\PY{n}{Nx}\PY{o}{+}\PY{n}{hx}\PY{o}{/}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}
+    \PY{n}{C} \PY{o}{=} \PY{n}{h}\PY{o}{*}\PY{n}{a}\PY{p}{(}\PY{n}{Nx}\PY{o}{+}\PY{n}{hx}\PY{o}{/}\PY{l+m+mi}{2}\PY{p}{)}
+    
+    \PY{c+c1}{\PYZsh{}Now we loop and solve}
+    \PY{c+c1}{\PYZsh{}Construct E and F}
+    \PY{n}{E}\PY{p}{,} \PY{n}{F} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{Nx}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{Nx}\PY{p}{)}\PY{p}{)}
+    
+    \PY{k}{for} \PY{n}{n} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{n+nb}{len}\PY{p}{(}\PY{n}{Nt}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+        \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{n+nb}{len}\PY{p}{(}\PY{n}{Nx}\PY{p}{)}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
+            \PY{n}{D} \PY{o}{=} \PY{n}{A}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{o}{*}\PY{n}{U}\PY{p}{[}\PY{n}{j}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,}\PY{n}{n}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{B}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{o}{*}\PY{n}{U}\PY{p}{[}\PY{n}{j}\PY{p}{,}\PY{n}{n}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{+} \PYZbs{}
+                                \PY{n}{C}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{o}{*}\PY{n}{U}\PY{p}{[}\PY{n}{j}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{,}\PY{n}{n}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{+} \PY{l+m+mi}{2}\PY{o}{*}\PY{n}{U}\PY{p}{[}\PY{n}{j}\PY{p}{,}\PY{n}{n}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{+} \PYZbs{}
+                                \PY{n}{ht}\PY{o}{*}\PY{p}{(}\PY{n}{f}\PY{p}{(}\PY{n}{Nx}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{p}{,}\PY{n}{Nt}\PY{p}{[}\PY{n}{n}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{o}{+}\PY{n}{f}\PY{p}{(}\PY{n}{Nx}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{p}{,}\PY{n}{Nt}\PY{p}{[}\PY{n}{n}\PY{p}{]}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{l+m+mi}{2}
+
+            \PY{n}{E}\PY{p}{[}\PY{n}{j}\PY{p}{]} \PY{o}{=} \PY{n}{C}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{o}{/}\PY{p}{(}\PY{n}{B}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{o}{\PYZhy{}}\PY{n}{A}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{o}{*}\PY{n}{E}\PY{p}{[}\PY{n}{j}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}
+            \PY{n}{F}\PY{p}{[}\PY{n}{j}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{n}{D}\PY{o}{+}\PY{n}{A}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{o}{*}\PY{n}{F}\PY{p}{[}\PY{n}{j}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{n}{B}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{o}{\PYZhy{}}\PY{n}{A}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{o}{*}\PY{n}{E}\PY{p}{[}\PY{n}{j}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}
+
+        \PY{c+c1}{\PYZsh{}Build solution}
+        \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{Nx}\PY{p}{)}\PY{o}{\PYZhy{}}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
+            \PY{n}{U}\PY{p}{[}\PY{n}{j}\PY{p}{,}\PY{n}{n}\PY{p}{]} \PY{o}{=} \PY{n}{E}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{o}{*}\PY{n}{U}\PY{p}{[}\PY{n}{j}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{,}\PY{n}{n}\PY{p}{]} \PY{o}{+} \PY{n}{F}\PY{p}{[}\PY{n}{j}\PY{p}{]}
+    
+    \PY{k}{return} \PY{n}{U}\PY{p}{,} \PY{n}{Nx}\PY{p}{,} \PY{n}{Nt}
+\end{Verbatim}
+\end{tcolorbox}
+
+    In order to visually examine the solutions we receive from our method
+defined above we will define a method that plots a temporal snapshot for
+the entire spatial domain.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{3}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{spaceEvolution}\PY{p}{(}\PY{n}{U}\PY{p}{,} \PY{n}{Nx}\PY{p}{,} \PY{n}{Nt}\PY{p}{,} \PY{n}{n}\PY{o}{=}\PY{l+m+mi}{4}\PY{p}{,} \PY{n}{t}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Heat}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{:}
+    \PY{n}{step} \PY{o}{=} \PY{n+nb}{int}\PY{p}{(}\PY{n}{U}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{/}\PY{n}{n}\PY{p}{)}
+    
+    \PY{n}{fig}\PY{p}{,} \PY{n}{ax} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{,}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{,}\PY{l+m+mi}{10}\PY{p}{)}\PY{p}{)}
+    
+    \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{p}{:}
+        \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{Nx}\PY{p}{,} \PY{n}{U}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{n}{step}\PY{o}{*}\PY{n}{i}\PY{p}{]}\PY{p}{)}
+        
+    \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Spatial dimension (x)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Solution (u)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Space Evolution of }\PY{l+s+si}{\PYZob{}}\PY{n}{t}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ Equation Solution}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{[}\PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{t = }\PY{l+s+si}{\PYZob{}}\PY{n}{Nt}\PY{p}{[}\PY{n}{step}\PY{o}{*}\PY{n}{i}\PY{p}{]}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{\PYZsq{}} \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    We will apply our scheme to several examples where we change the system
+input (\(f\)), the conductivity (\(a\)), and the initial conditions.
+First, we define a few terms that will be constant such as the domain of
+the solution and the stepsizes. Specifically, we consider \(x\in[0,1]\)
+and \(t\in[0,1]\) with a space step and time step of 0.01 which should
+be stable as per the theory.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{7}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{d} \PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{10}\PY{p}{)}\PY{p}{)}
+\PY{n}{ht} \PY{o}{=} \PY{l+m+mf}{0.01}
+\PY{n}{hx} \PY{o}{=} \PY{l+m+mf}{0.01}
+\end{Verbatim}
+\end{tcolorbox}
+
+    We first consider the following problem..
+
+\begin{align}
+    &\phi_t=\frac{\phi_{xx}}{100}\\
+    &\text{IC:}\quad\phi(x,0)=-4x(x-1)
+\end{align}
+
+Thus we consider constant conductivity of 0.01 and no system input, so
+this should be about the simplest form possible. The initial conditions
+are such that heat is located more towards the center of the domain.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{20}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{f} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{,}\PY{n}{t}\PY{p}{:} \PY{l+m+mi}{0}
+\PY{n}{a} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{l+m+mf}{0.01}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{)}
+\PY{n}{ic} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{o}{\PYZhy{}}\PY{l+m+mi}{4}\PY{o}{*}\PY{n}{x}\PY{o}{*}\PY{p}{(}\PY{n}{x}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{21}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{sol}\PY{p}{,} \PY{n}{Nx}\PY{p}{,} \PY{n}{Nt} \PY{o}{=} \PY{n}{heatEq}\PY{p}{(}\PY{n}{f}\PY{p}{,} \PY{n}{a}\PY{p}{,} \PY{n}{ic}\PY{p}{,} \PY{n}{d}\PY{p}{,} \PY{n}{hx}\PY{p}{,} \PY{n}{ht}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{22}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{spaceEvolution}\PY{p}{(}\PY{n}{sol}\PY{p}{,} \PY{n}{Nx}\PY{p}{,} \PY{n}{Nt}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_12_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    The solution we receive is exactly as we would expect, without any
+source term the heat decays as time progresses.
+
+    Next, we consider the following\ldots{}
+
+\begin{align}
+    &\phi_t=\partial_x\big[\frac{(1-x)}{10}\cdot\phi_x\big]\\
+    &\text{IC:}\quad\phi(x,0)=-4x^2(x-1)
+\end{align}
+
+In this scenario we still do not have a source term, but now the
+conductivity decreases from 1 towards 0 as you move from left to right
+on the domain. As well, the initial conditions are such that heat is
+located more towards this righ side of the domain.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{14}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{f} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{,}\PY{n}{t}\PY{p}{:} \PY{l+m+mi}{0}
+\PY{n}{a} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{l+m+mf}{0.1}\PY{o}{*}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{\PYZhy{}}\PY{n}{x}\PY{p}{)}
+\PY{n}{ic} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{o}{\PYZhy{}}\PY{l+m+mi}{4}\PY{o}{*}\PY{p}{(}\PY{n}{x}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{n}{x}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{15}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{sol}\PY{p}{,} \PY{n}{Nx}\PY{p}{,} \PY{n}{Nt} \PY{o}{=} \PY{n}{heatEq}\PY{p}{(}\PY{n}{f}\PY{p}{,} \PY{n}{a}\PY{p}{,} \PY{n}{ic}\PY{p}{,} \PY{n}{d}\PY{p}{,} \PY{n}{hx}\PY{p}{,} \PY{n}{ht}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{16}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{spaceEvolution}\PY{p}{(}\PY{n}{sol}\PY{p}{,} \PY{n}{Nx}\PY{p}{,} \PY{n}{Nt}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    Again we see results that match our expectations. Because the
+conductivity is zero towards the right side of the domain, heat is
+unable to escape and has to travel to the left. This is what results in
+heat continuing to be located near the right end. However, because there
+is still no source the heat will continue to decay as time progresses.
+
+    Lastly, we consider the following\ldots{}
+
+\begin{align}
+    &\phi_t=\frac{\phi_{xx}}{100}+\sin(\pi x)e^{-t}\\
+    &\text{IC:}\quad\phi(x,0)=-4x^2(x-1)
+\end{align}
+
+We have switched back to our constant conductivity and kept the right
+justified initial conditions, but now we have a source term that decays
+over time.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{32}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{f} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{,}\PY{n}{t}\PY{p}{:} \PY{n}{np}\PY{o}{.}\PY{n}{sin}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{pi}\PY{o}{*}\PY{n}{x}\PY{p}{)}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{n}{t}\PY{p}{)}
+\PY{n}{a} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{l+m+mf}{0.01}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{)}
+\PY{n}{ic} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{o}{\PYZhy{}}\PY{l+m+mi}{4}\PY{o}{*}\PY{p}{(}\PY{n}{x}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{n}{x}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{33}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{sol}\PY{p}{,} \PY{n}{Nx}\PY{p}{,} \PY{n}{Nt} \PY{o}{=} \PY{n}{heatEq}\PY{p}{(}\PY{n}{f}\PY{p}{,} \PY{n}{a}\PY{p}{,} \PY{n}{ic}\PY{p}{,} \PY{n}{d}\PY{p}{,} \PY{n}{hx}\PY{p}{,} \PY{n}{ht}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{34}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{spaceEvolution}\PY{p}{(}\PY{n}{sol}\PY{p}{,} \PY{n}{Nx}\PY{p}{,} \PY{n}{Nt}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    Some slightly more complicated dynamics are taking place, but it is
+still within our expectations. We note two things: the heat becomes more
+evenly distributed over time due to the source term and the constant
+conductivity, and the heat actually increases before decaying. The
+latter phenomenon occurs because the source term initially overpowers
+the loss of heat before itself decays to zero.
+
+    We can reverse the direction of time in the Heat Equation above by
+negating the RHS. The results of doing so are shown below.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{5}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{f} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{,}\PY{n}{t}\PY{p}{:} \PY{l+m+mi}{0}
+\PY{n}{a} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{o}{\PYZhy{}}\PY{l+m+mf}{0.01}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{)}
+\PY{n}{ic} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{o}{\PYZhy{}}\PY{l+m+mi}{4}\PY{o}{*}\PY{n}{x}\PY{o}{*}\PY{p}{(}\PY{n}{x}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{10}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{sol}\PY{p}{,} \PY{n}{Nx}\PY{p}{,} \PY{n}{Nt} \PY{o}{=} \PY{n}{heatEq}\PY{p}{(}\PY{n}{f}\PY{p}{,} \PY{n}{a}\PY{p}{,} \PY{n}{ic}\PY{p}{,} \PY{n}{d}\PY{p}{,} \PY{o}{.}\PY{l+m+mi}{1}\PY{p}{,} \PY{o}{.}\PY{l+m+mi}{1}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{11}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{spaceEvolution}\PY{p}{(}\PY{n}{sol}\PY{p}{,} \PY{n}{Nx}\PY{p}{,} \PY{n}{Nt}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_27_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    We can see that this causes severe problems as the solution blows up.
+
+    \hypertarget{problem-2}{%
+\section{Problem 2}\label{problem-2}}
+
+    We will implement the explicit second-order central difference scheme
+for the wave equation given below:
+
+\begin{align}
+&\phi_{tt}=\partial_x[a(x)\cdot\phi_x]+f(x,t)\\
+&\text{IC:}\quad\phi(x,0)=\phi_0\\
+&\text{IC:}\quad\phi_t(x,0)=\phi_1 
+\end{align}
+
+We assume that all functions are periodic in \(x\) with a period of 1,
+which gives us the following boundary condition assuming a target
+interval of \([0,1]\):
+
+\[ \text{BC:}\quad \phi(0,t)=\phi(1,t) \]
+
+    In the code below we define this central difference scheme where we only
+assume the functions are periodic over the specified spatial domain.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{6}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{l+s+sd}{\PYZsq{}\PYZsq{}\PYZsq{}}
+\PY{l+s+sd}{1 dimensional Wave Equation solver using explicit central difference}
+\PY{l+s+sd}{scheme. We assume that all functions are periodic over the target}
+\PY{l+s+sd}{interval for the spatial dimension.}
+
+\PY{l+s+sd}{f \PYZhy{}\PYZgt{} f(x,t), input to the system (i.e. RHS)}
+\PY{l+s+sd}{a \PYZhy{}\PYZgt{} a(x), velocity}
+\PY{l+s+sd}{ic \PYZhy{}\PYZgt{} (phi(x), phi\PYZsq{}(x)), initial conditions for spatial dimension}
+\PY{l+s+sd}{d \PYZhy{}\PYZgt{} ((x0, xN), (t0, tN)) Tuple of spatial domain and temporal domain}
+\PY{l+s+sd}{hx \PYZhy{}\PYZgt{} Spatial step size (optional)}
+\PY{l+s+sd}{ht \PYZhy{}\PYZgt{} Temporal step size (optional)}
+\PY{l+s+sd}{\PYZsq{}\PYZsq{}\PYZsq{}}
+\PY{k}{def} \PY{n+nf}{waveEq}\PY{p}{(}\PY{n}{f}\PY{p}{,} \PY{n}{a}\PY{p}{,} \PY{n}{ic}\PY{p}{,} \PY{n}{d}\PY{p}{,} \PY{n}{hx}\PY{o}{=}\PY{l+m+mf}{0.1}\PY{p}{,} \PY{n}{ht}\PY{o}{=}\PY{l+m+mf}{0.1}\PY{p}{)}\PY{p}{:}
+    \PY{c+c1}{\PYZsh{}Unpack some stuff}
+    \PY{n}{Dx} \PY{o}{=} \PY{n}{d}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}
+    \PY{n}{Dt} \PY{o}{=} \PY{n}{d}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}
+    
+    \PY{c+c1}{\PYZsh{}Set up grid}
+    \PY{n}{Nx} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n}{Dx}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{n}{Dx}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{+}\PY{n}{hx}\PY{p}{,} \PY{n}{hx}\PY{p}{)}
+    \PY{n}{Nt} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{n}{Dt}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{n}{Dt}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{+}\PY{n}{ht}\PY{p}{,} \PY{n}{ht}\PY{p}{)}
+    
+    \PY{n}{U} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{Nx}\PY{p}{)}\PY{p}{,} \PY{n+nb}{len}\PY{p}{(}\PY{n}{Nt}\PY{p}{)}\PY{p}{)}\PY{p}{)} \PY{c+c1}{\PYZsh{}Space x Time}
+    
+    \PY{c+c1}{\PYZsh{}Check consistency}
+    \PY{k}{assert} \PY{n}{np}\PY{o}{.}\PY{n}{allclose}\PY{p}{(}\PY{n}{ic}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{Dx}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{n}{ic}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{Dx}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+    
+    \PY{c+c1}{\PYZsh{}Set IC}
+    \PY{n}{U}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{n}{ic}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{(}\PY{n}{Nx}\PY{p}{)}
+    
+    \PY{c+c1}{\PYZsh{}Condensing terms}
+    \PY{n}{h} \PY{o}{=} \PY{p}{(}\PY{n}{ht}\PY{o}{/}\PY{n}{hx}\PY{p}{)}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}
+    
+    \PY{c+c1}{\PYZsh{}Build the matrices A and B}
+    \PY{n}{am}\PY{p}{,} \PY{n}{ap} \PY{o}{=} \PY{n}{a}\PY{p}{(}\PY{n}{Nx}\PY{o}{\PYZhy{}}\PY{n}{hx}\PY{o}{/}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{,} \PY{n}{a}\PY{p}{(}\PY{n}{Nx}\PY{o}{+}\PY{n}{hx}\PY{o}{/}\PY{l+m+mi}{2}\PY{p}{)}
+    
+    \PY{n}{A} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{diag}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{p}{(}\PY{n}{am} \PY{o}{+} \PY{n}{ap}\PY{p}{)}\PY{p}{)} \PY{o}{+} \PY{n}{np}\PY{o}{.}\PY{n}{diag}\PY{p}{(}\PY{n}{am}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{:}\PY{p}{]}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{)} \PY{o}{+} \PY{n}{np}\PY{o}{.}\PY{n}{diag}\PY{p}{(}\PY{n}{am}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{:}\PY{p}{]}\PY{p}{,} \PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}
+    \PY{n}{A}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{=} \PY{n}{ap}\PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}
+    \PY{n}{A}\PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{n}{ap}\PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}
+    
+    \PY{n}{B} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{eye}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{Nx}\PY{p}{)}\PY{p}{)} \PY{o}{+} \PY{p}{(}\PY{n}{h}\PY{o}{/}\PY{l+m+mi}{2}\PY{p}{)}\PY{o}{*}\PY{n}{A}
+    
+    \PY{c+c1}{\PYZsh{}Then we seed our scheme}
+    \PY{n}{U}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{=} \PY{n}{B}\PY{n+nd}{@U}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{+} \PY{n}{ht}\PY{o}{*}\PY{n}{ic}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{(}\PY{n}{Nx}\PY{p}{)} \PY{o}{+} \PY{p}{(}\PY{n}{ht}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{n}{f}\PY{p}{(}\PY{n}{Nx}\PY{p}{,} \PY{n}{Nt}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{l+m+mi}{2}
+    
+    \PY{k}{for} \PY{n}{n} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{n+nb}{len}\PY{p}{(}\PY{n}{Nt}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+        \PY{n}{U}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{n}{n}\PY{p}{]} \PY{o}{=} \PY{l+m+mi}{2}\PY{o}{*}\PY{n}{B}\PY{n+nd}{@U}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{n}{n}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{U}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{n}{n}\PY{o}{\PYZhy{}}\PY{l+m+mi}{2}\PY{p}{]} \PY{o}{+} \PY{p}{(}\PY{n}{ht}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{n}{f}\PY{p}{(}\PY{n}{Nx}\PY{p}{,} \PY{n}{Nt}\PY{p}{[}\PY{n}{n}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+        
+    \PY{k}{return} \PY{n}{U}\PY{p}{,} \PY{n}{Nx}\PY{p}{,} \PY{n}{Nt}
+\end{Verbatim}
+\end{tcolorbox}
+
+    In addition to our temporal snapshot visualization we defined earlier,
+we will also define a spatial variation that plots a spatial snapshot
+over the time domain.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{7}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{timeEvolution}\PY{p}{(}\PY{n}{U}\PY{p}{,} \PY{n}{Nx}\PY{p}{,} \PY{n}{Nt}\PY{p}{,} \PY{n}{t}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Wave}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{:}
+    \PY{n}{fig}\PY{p}{,} \PY{n}{ax} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{,}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{,}\PY{l+m+mi}{10}\PY{p}{)}\PY{p}{)}
+    
+    \PY{n}{rng} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{default\PYZus{}rng}\PY{p}{(}\PY{p}{)}
+    \PY{n}{loc} \PY{o}{=} \PY{n}{rng}\PY{o}{.}\PY{n}{integers}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{n+nb}{len}\PY{p}{(}\PY{n}{Nx}\PY{p}{)}\PY{p}{)}
+    
+    \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{Nt}\PY{p}{,} \PY{n}{U}\PY{p}{[}\PY{n}{loc}\PY{p}{,}\PY{p}{:}\PY{p}{]}\PY{p}{)}
+        
+    \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Time dimension (t)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Solution (u)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Time Evolution of }\PY{l+s+si}{\PYZob{}}\PY{n}{t}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ Equation Solution}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{[}\PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{x = }\PY{l+s+si}{\PYZob{}}\PY{n}{Nx}\PY{p}{[}\PY{n}{loc}\PY{p}{]}\PY{l+s+si}{:}\PY{l+s+s1}{.3f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    We will now verify that our method works as expected by applying it to a
+number of examples where we can vary the source term, the wave speed,
+and the initial conditions. The only thing we will specify for all
+problems is the domain, specifically \(x\in[0,1]\) and \(t\in[0,10]\).
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{8}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{d} \PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{10}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    We first consider the following problem..
+
+\begin{align}
+&\phi_{tt}=\phi_{xx}\\
+&\text{IC:}\quad\phi(x,0)=\sin(2\pi x)\\
+&\text{IC:}\quad\phi_t(x,0)=0 
+\end{align}
+
+Here we have no source term, constant unit speed, a sinusoidal initial
+position, and no initial velocity. This is the simplest setup, and one
+that should produce two standing waves. We also note that we take the
+time and space step sizes to be 0.001 which should be stable given we
+have constant wave speed of 1.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{37}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{ht}\PY{p}{,} \PY{n}{hx} \PY{o}{=} \PY{l+m+mf}{0.001}\PY{p}{,} \PY{l+m+mf}{0.001}
+
+\PY{n}{f} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{,}\PY{n}{t}\PY{p}{:} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n}{x}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+\PY{n}{a} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{np}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{n}{x}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+\PY{n}{ic1} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{np}\PY{o}{.}\PY{n}{sin}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{pi}\PY{o}{*}\PY{n}{x}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{)}
+\PY{n}{ic2} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n}{x}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{38}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{sol}\PY{p}{,} \PY{n}{Nx}\PY{p}{,} \PY{n}{Nt} \PY{o}{=} \PY{n}{waveEq}\PY{p}{(}\PY{n}{f}\PY{p}{,} \PY{n}{a}\PY{p}{,} \PY{p}{(}\PY{n}{ic1}\PY{p}{,} \PY{n}{ic2}\PY{p}{)}\PY{p}{,} \PY{n}{d}\PY{p}{,} \PY{n}{hx}\PY{p}{,} \PY{n}{ht}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{39}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{spaceEvolution}\PY{p}{(}\PY{n}{sol}\PY{p}{,} \PY{n}{Nx}\PY{p}{,} \PY{n}{Nt}\PY{p}{,} \PY{n}{t}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Wave}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_40_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    There are the two standing waves that we expect. In fact, we cannot even
+see all the curves because some are hiding behind the others.
+
+    Next, we consider the following problem..
+
+\begin{align}
+&\phi_{tt}=\frac{\phi_{xx}}{10}\\
+&\text{IC:}\quad\phi(x,0)=\text{Gaussian}(0.5, 0.1)\\
+&\text{IC:}\quad\phi_t(x,0)=0
+\end{align}
+
+We maintain the constant wave speed (but reduce the magnitude) and the
+initial velocity, but now we have a Gaussian initial condition.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{64}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{from} \PY{n+nn}{scipy}\PY{n+nn}{.}\PY{n+nn}{stats} \PY{k+kn}{import} \PY{n}{norm}
+
+\PY{n}{ht}\PY{p}{,} \PY{n}{hx} \PY{o}{=} \PY{l+m+mf}{0.001}\PY{p}{,} \PY{l+m+mf}{0.001}
+
+\PY{n}{f} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{,}\PY{n}{t}\PY{p}{:} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n}{x}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+\PY{n}{a} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{l+m+mf}{0.1}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{n}{x}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+\PY{n}{ic1} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{norm}\PY{o}{.}\PY{n}{pdf}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{loc}\PY{o}{=}\PY{l+m+mf}{0.5}\PY{p}{,} \PY{n}{scale}\PY{o}{=}\PY{l+m+mf}{0.1}\PY{p}{)} \PY{c+c1}{\PYZsh{}Gaussian}
+\PY{n}{ic2} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n}{x}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{65}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{sol}\PY{p}{,} \PY{n}{Nx}\PY{p}{,} \PY{n}{Nt} \PY{o}{=} \PY{n}{waveEq}\PY{p}{(}\PY{n}{f}\PY{p}{,} \PY{n}{a}\PY{p}{,} \PY{p}{(}\PY{n}{ic1}\PY{p}{,} \PY{n}{ic2}\PY{p}{)}\PY{p}{,} \PY{n}{d}\PY{p}{,} \PY{n}{hx}\PY{p}{,} \PY{n}{ht}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{69}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{spaceEvolution}\PY{p}{(}\PY{n}{sol}\PY{p}{,} \PY{n}{Nx}\PY{p}{,} \PY{n}{Nt}\PY{p}{,} \PY{n}{t}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Wave}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_45_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    Finally, we consider the following problem..
+
+\begin{align}
+&\phi_{tt}=\phi_{xx}+5\cos(t)I_{x=0}\\
+&\text{IC:}\quad\phi(x,0)=0\\
+&\text{IC:}\quad\phi_t(x,0)=0 
+\end{align}
+
+We have a point source and a zero initial conditions.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{123}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{ht}\PY{p}{,} \PY{n}{hx} \PY{o}{=} \PY{l+m+mf}{0.001}\PY{p}{,} \PY{l+m+mf}{0.001}
+
+\PY{n}{f} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{,}\PY{n}{t}\PY{p}{:} \PY{l+m+mi}{5}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{1} \PY{k}{if} \PY{n}{xi}\PY{o}{==}\PY{l+m+mi}{0} \PY{k}{else} \PY{l+m+mi}{0} \PY{k}{for} \PY{n}{xi} \PY{o+ow}{in} \PY{n}{x}\PY{p}{]}\PY{p}{)}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{cos}\PY{p}{(}\PY{n}{t}\PY{p}{)}
+\PY{n}{a} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{np}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{n}{x}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+\PY{n}{ic1} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n}{x}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+\PY{n}{ic2} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n}{x}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{124}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{sol}\PY{p}{,} \PY{n}{Nx}\PY{p}{,} \PY{n}{Nt} \PY{o}{=} \PY{n}{waveEq}\PY{p}{(}\PY{n}{f}\PY{p}{,} \PY{n}{a}\PY{p}{,} \PY{p}{(}\PY{n}{ic1}\PY{p}{,} \PY{n}{ic2}\PY{p}{)}\PY{p}{,} \PY{n}{d}\PY{p}{,} \PY{n}{hx}\PY{p}{,} \PY{n}{ht}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{125}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{timeEvolution}\PY{p}{(}\PY{n}{sol}\PY{p}{,} \PY{n}{Nx}\PY{p}{,} \PY{n}{Nt}\PY{p}{,} \PY{n}{t}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Wave}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_49_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    The results are what we would expect but they don't look great. This is
+most likely down to numerical imprecision given the more difficult
+setup.
+
+    We can change the sign of the RHS of the Wave Equation above just like
+we did for the Heat Equation and observe the following results.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{129}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{ht}\PY{p}{,} \PY{n}{hx} \PY{o}{=} \PY{l+m+mf}{0.01}\PY{p}{,} \PY{l+m+mf}{0.01}
+
+\PY{n}{f} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{,}\PY{n}{t}\PY{p}{:} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n}{x}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+\PY{n}{a} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{o}{\PYZhy{}}\PY{l+m+mf}{0.1}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{n}{x}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+\PY{n}{ic1} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{np}\PY{o}{.}\PY{n}{sin}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{pi}\PY{o}{*}\PY{n}{x}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{)}
+\PY{n}{ic2} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n}{x}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{130}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{sol}\PY{p}{,} \PY{n}{Nx}\PY{p}{,} \PY{n}{Nt} \PY{o}{=} \PY{n}{waveEq}\PY{p}{(}\PY{n}{f}\PY{p}{,} \PY{n}{a}\PY{p}{,} \PY{p}{(}\PY{n}{ic1}\PY{p}{,} \PY{n}{ic2}\PY{p}{)}\PY{p}{,} \PY{n}{d}\PY{p}{,} \PY{n}{hx}\PY{p}{,} \PY{n}{ht}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{131}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{timeEvolution}\PY{p}{(}\PY{n}{sol}\PY{p}{,} \PY{n}{Nx}\PY{p}{,} \PY{n}{Nt}\PY{p}{,} \PY{n}{t}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Wave}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_54_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    Similarly the solution blows up. We can also violate the step size
+criterion by taking the time step to be 0.0005 larger the space step. We
+do this for the original problem and observe the results.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{24}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{ht}\PY{p}{,} \PY{n}{hx} \PY{o}{=} \PY{l+m+mf}{0.0105}\PY{p}{,} \PY{l+m+mf}{0.01}
+
+\PY{n}{f} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{,}\PY{n}{t}\PY{p}{:} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n}{x}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+\PY{n}{a} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{np}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{n}{x}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+\PY{n}{ic1} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{np}\PY{o}{.}\PY{n}{sin}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{pi}\PY{o}{*}\PY{n}{x}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{)}
+\PY{n}{ic2} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n}{x}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{25}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{sol}\PY{p}{,} \PY{n}{Nx}\PY{p}{,} \PY{n}{Nt} \PY{o}{=} \PY{n}{waveEq}\PY{p}{(}\PY{n}{f}\PY{p}{,} \PY{n}{a}\PY{p}{,} \PY{p}{(}\PY{n}{ic1}\PY{p}{,} \PY{n}{ic2}\PY{p}{)}\PY{p}{,} \PY{n}{d}\PY{p}{,} \PY{n}{hx}\PY{p}{,} \PY{n}{ht}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{26}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{spaceEvolution}\PY{p}{(}\PY{n}{sol}\PY{p}{,} \PY{n}{Nx}\PY{p}{,} \PY{n}{Nt}\PY{p}{,} \PY{n}{t}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Wave}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_58_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    We can see that even just barely violating this criterion results in an
+unbounded solution.
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}
